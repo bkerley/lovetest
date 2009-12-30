@@ -34,12 +34,23 @@ function love.load()
       up   = function() player.y_acc = 0 end;
       down = function() player.y_acc = 0 end
    }
+   
+   love.graphics.setColorMode("replace")
 end
 
 function love.draw()
+   love.graphics.setColor(32, 32, 32)
    love.graphics.draw(particles, 0, 0)
-   love.graphics.print(string.format("key %s", key), 400, 300)
    love.graphics.draw(doakes, player.x_pos, player.y_pos)
+   love.graphics.rectangle("fill", 0, 570, 200, 30)
+   love.graphics.print(string.format("key %s", key), 0, 580)
+   love.graphics.print(
+                       string.format("vel %dx%d acc %dx%d",
+                                     player.x_vel,
+                                     player.y_vel,
+                                     player.x_acc,
+                                     player.y_acc),
+                       0, 590)
 end
 
 function love.update(dt)
@@ -67,10 +78,21 @@ end
 function compute_velocity(vel, acc, dt)
    if (vel <= 0 and acc < 0) then
       return math.max(-16, vel + (acc*dt))
-   elseif ((vel < 0 and acc > 0) or (vel > 0 and acc < 0) or (acc == 0)) then
+   elseif ((vel < 0 and acc > 0) or (vel > 0 and acc < 0)) then
       return 0
    elseif (vel >= 0 and acc > 0) then
       return math.min( 16, vel + (acc*dt))
+   elseif (acc == 0) then
+      return math.round(vel - ((vel / 4) * dt * 3))
    end
 end
    
+function math.round(num)
+   if num > 0 then
+      return math.floor(num)
+   elseif num < 0 then
+      return math.ceil(num)
+   else
+      return 0
+   end
+end
